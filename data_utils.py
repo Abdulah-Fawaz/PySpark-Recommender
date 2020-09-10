@@ -27,17 +27,62 @@ def download_data(url, name):
 
 
 def get_zip(datasize):
-    datasize = datasize.lower()
-    assert datasize in ['100k', '25m'] , 'Only 25M or 100k size datasets available'
     
-    filename = 'movielens_' + datasize +'.zip'
+    """
+    
+    Checks if zip file exists and downloads if it does not
+    
+    """
+    
+    zip_filename = 'movielens_' + datasize +'.zip'
     
     
-    if not check_if_zip_exists(filename):
+    if not check_if_zip_exists(zip_filename):
         
         url = 'http://files.grouplens.org/datasets/movielens/ml-' + datasize + '.zip'
     
-        download_data(url, filename)  
+        download_data(url, zip_filename)  
     
-        
+    extract_zip(zip_filename) 
     return 
+
+
+
+def check_if_folder_exists(foldername):
+    from os import path
+    return path.isdir(foldername)
+
+
+
+def extract_zip(zipfile):
+    from zipfile import ZipFile
+    print('Unzipping...')
+    with ZipFile(zipfile,"r") as zipped:
+        zipped.extractall()
+
+
+
+def get_data(datasize):
+    """
+    Checks for the data and gathers it if not present.
+    
+    If folder does not exist - extracts zip.
+    If zip does not exist - downloads it.
+    
+    """
+    datasize = datasize.lower()
+    assert datasize in ['100k', '25m'] , 'Only 25M or 100k size datasets available'
+    
+    # if dir not exists:
+        #get zip
+        # extract zip
+    # load data
+    # return data
+    
+    foldername = 'ml-' + datasize
+    
+    if not check_if_folder_exists(foldername):
+        get_zip(datasize)
+    
+    return
+
