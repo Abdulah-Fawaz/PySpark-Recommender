@@ -1,1 +1,1 @@
-import os from data_utils import get_data, load_ratings_dataimport pandas as pdsize = '25m'get_data(size) #  data is '25M' or '100k'  use argparseds = load_ratings_data(size)
+import os from data_utils import get_data, load_ratings_data_with_sparkfrom pyspark.sql import SparkSession from pyspark.sql.functions import *spark = SparkSession.builder.appName('MovieRecommender').getOrCreate()size = '100k'get_data(size) #  data is '25M' or '100k'  use argparse# ds = load_ratings_data(size)df = load_ratings_data_with_spark(size, spark)

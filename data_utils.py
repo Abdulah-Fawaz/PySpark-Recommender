@@ -89,7 +89,7 @@ def get_data(datasize):
 
 
 
-def load_ratings_data(datasize):
+def load_ratings_data_pandas(datasize):
     
     import os
     
@@ -110,6 +110,40 @@ def load_ratings_data(datasize):
         
     elif datasize == '25m':
         ds = pd.read_csv('ml-25m/ratings.csv', sep='\t', header = 'infer')
+        
+    else:
+        ValueError('Invalid dataset size. Must be 100k or 25m')
+        
+    return ds
+
+
+def load_ratings_data_with_spark(datasize, spark_sesh):
+    
+    import os
+    
+    datasize = datasize.lower()
+    
+    if datasize == '100k':
+        datalocation = 'ml-100k/u.data'
+        
+    else:
+        datalocation = 'ml-25m/ratings.csv'
+    
+    assert check_if_file_exists(datalocation), "Cannot load file at location " + str(datalocation) + " . File not Found"
+    
+    print("Loading Data")
+
+    if datasize == '100k':
+        from pyspark.sql.types import StructType, StructField, IntegerType, DoubleType
+        myschema = StructType([
+            StructField("userId", IntegerType(), True),
+            StructField("movieId", IntegerType(), True),
+            StructField("rating", DoubleType(), True),
+            StructField("timestamp", IntegerType(), True)])
+        ds = spark_sesh.read.csv('ml-100k/u.data',schema = myschema,header=True, sep = '\t')
+        
+    elif datasize == '25m':
+        ds = spark_sesh.read.csv('ml-25m/ratings.csv',inferSchema=True,header=True)
         
     else:
         ValueError('Invalid dataset size. Must be 100k or 25m')
