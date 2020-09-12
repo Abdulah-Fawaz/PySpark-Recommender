@@ -7,7 +7,7 @@ Created on Wed Sep  9 19:10:44 2020
 """
 
 
-def check_if_zip_exists(filename):
+def check_if_file_exists(filename):
     from os import path
 
     return path.isfile(filename)
@@ -37,7 +37,7 @@ def get_zip(datasize):
     zip_filename = 'movielens_' + datasize +'.zip'
     
     
-    if not check_if_zip_exists(zip_filename):
+    if not check_if_file_exists(zip_filename):
         
         url = 'http://files.grouplens.org/datasets/movielens/ml-' + datasize + '.zip'
     
@@ -83,6 +83,35 @@ def get_data(datasize):
     
     if not check_if_folder_exists(foldername):
         get_zip(datasize)
-    
     return
 
+
+
+
+
+def load_ratings_data(datasize):
+    
+    import os
+    
+    datasize = datasize.lower()
+    
+    if datasize == '100k':
+        datalocation = 'ml-100k/u.data'
+        
+    else:
+        datalocation = 'ml-25m/ratings.csv'
+    
+    assert check_if_file_exists(datalocation), "Cannot load file at location " + str(datalocation) + " . File not Found"
+    
+    import pandas as pd
+    print("Loading Data")
+    if datasize == '100k':
+        ds = pd.read_csv('ml-100k/u.data', sep='\t', header = None, names = ['userId','movieId', 'rating', 'timestamp'])
+        
+    elif datasize == '25m':
+        ds = pd.read_csv('ml-25m/ratings.csv', sep='\t', header = 'infer')
+        
+    else:
+        ValueError('Invalid dataset size. Must be 100k or 25m')
+        
+    return ds
